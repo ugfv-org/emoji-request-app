@@ -29,7 +29,10 @@ export const addEmoji = async (request: AdminEmojiAddRequest) => {
 
   const ret = await (await fetch(`${PUBLIC_MISSKEY_SERVER_URL}/api/admin/emoji/add`, {
     method: "POST",
-    body: JSON.stringify(request),
+    body: JSON.stringify({
+      ...request,
+      i: env.EMOJI_ACCESS_TOKEN,
+    }),
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${env.EMOJI_ACCESS_TOKEN}`,
@@ -105,16 +108,26 @@ const app = new Hono()
       // const promiseI = miCheckApi.request("i", {})
 
       const promiseNote = fetch(`${PUBLIC_MISSKEY_SERVER_URL}/api/notes/show`, {
-        method: "GET",
+        method: "POST",
+        body: JSON.stringify({
+          noteId: request.noteId,
+          includeReactions: false,
+          includeRenote: false,
+          includeUser: true,
+          i: env.EMOJI_ACCESS_TOKEN,
+        }),
         headers: {
-          "Authorization": `Bearer ${env.EMOJI_ACCESS_TOKEN}`,
+          "Content-Type": "application/json",
         },
       })
 
       const promiseI = fetch(`${PUBLIC_MISSKEY_SERVER_URL}/api/i`, {
-        method: "GET",
+        method: "POST",
+        body: JSON.stringify({
+          i: request.authorToken,
+        }),
         headers: {
-          "Authorization": `Bearer ${request.authorToken}`,
+          "Content-Type": "application/json",
         },
       })
 
