@@ -96,7 +96,7 @@
 {#if error}
 	エラーが発生しました
 {:else if requested}
-	申請が完了しました 申請結果は<a href={PUBLIC_CHANNEL_ID} class="link link-hover link-secondary"
+	申請が完了しました 申請結果は<a href={`${PUBLIC_MISSKEY_SERVER_URL}/channels/${PUBLIC_CHANNEL_ID}`} class="link link-hover link-secondary"
 		>こちら</a
 	>
 {:else if authed}
