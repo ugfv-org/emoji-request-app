@@ -66,32 +66,38 @@ const app = new Hono()
       roleIdsThatCanBeUsedThisEmojiAsReaction: z.array(z.string()).optional(),
     }))
   })), async (c) => {
-    const request = c.req.valid('json');
 
-    // 申請者のトークンとノートの作者のトークンが一致するか
-    const miCheckApi = new api.APIClient({
-      origin: PUBLIC_MISSKEY_SERVER_URL,
-      credential: request.authorToken,
-    })
+    try {
+      const request = c.req.valid('json');
 
-    const promiseNote = miCheckApi.request("notes/show", {
-      noteId: request.noteId,
-      includeReactions: false,
-      includeRenote: false,
-      includeUser: true,
-    })
+      // 申請者のトークンとノートの作者のトークンが一致するか
+      const miCheckApi = new api.APIClient({
+        origin: PUBLIC_MISSKEY_SERVER_URL,
+        credential: request.authorToken,
+      })
 
-    const promiseI = miCheckApi.request("i", {})
+      const promiseNote = miCheckApi.request("notes/show", {
+        noteId: request.noteId,
+        includeReactions: false,
+        includeRenote: false,
+        includeUser: true,
+      })
 
-    const [note, i] = await Promise.all([promiseNote, promiseI])
-    if (i.id !== note.user.id) {
-      return c.text("Unauthorized", 401)
+      const promiseI = miCheckApi.request("i", {})
+
+      const [note, i] = await Promise.all([promiseNote, promiseI])
+      if (i.id !== note.user.id) {
+        return c.text("Unauthorized", 401)
+      }
+
+      for (let i = 0; i < request.emojis.length; i++) {
+        await addEmoji(request.emojis[i])
+      }
+      return c.text("ok")
+    } catch (err) {
+      console.log(err)
+      return c.text("error", 500)
     }
-
-    for (let i = 0; i < request.emojis.length; i++) {
-      await addEmoji(request.emojis[i])
-    }
-    return c.text("ok")
   });
 
 
