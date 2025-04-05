@@ -17,6 +17,9 @@ importers:
       hono:
         specifier: ^4.7.5
         version: 4.7.5
+      misskey-js:
+        specifier: 2025.4.0-rc.1
+        version: 2025.4.0-rc.1
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -769,6 +772,9 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@simplewebauthn/types@12.0.0':
+    resolution: {integrity: sha512-q6y8MkoV8V8jB4zzp18Uyj2I7oFp2/ONL8c3j8uT06AOWu3cIChc1au71QYHrP2b+xDapkGTiv+9lX7xkTlAsA==}
+
   '@sveltejs/acorn-typescript@1.0.5':
     resolution: {integrity: sha512-IwQk4yfwLdibDlrXVE04jTZYlLnwsTT2PIOQQGNLWfjavGifnk1JD1LcZjZaBTRcxZu2FfPfNLOE04DSu9lqtQ==}
     peerDependencies:
@@ -1168,6 +1174,9 @@ packages:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
     engines: {node: '>=0.10.0'}
 
+  eventemitter3@5.0.1:
+    resolution: {integrity: sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==}
+
   exit-hook@2.2.1:
     resolution: {integrity: sha512-eNTPlAD67BmP31LDINZ3U7HSF8l57TxOY2PmBJ1shpCvpnxBF93mWCE8YHBnXs8qiUZJc9WDcWIeC3a2HIAMfw==}
     engines: {node: '>=6'}
@@ -1442,6 +1451,9 @@ packages:
     resolution: {integrity: sha512-G6T0ZX48xgozx7587koeX9Ys2NYy6Gmv//P89sEte9V9whIapMNF4idKxnW2QtCcLiTWlb/wfCabAtAFWhhBow==}
     engines: {node: '>=16 || 14 >=14.17'}
 
+  misskey-js@2025.4.0-rc.1:
+    resolution: {integrity: sha512-5KNeohiiB4yEv1/bTkwKNIluRGiJof2ud/vsVt4wowyZ2wneQPYpl8ktYm/RcMmUvSdOg32dnqc5QkmpKeu37Q==}
+
   mri@1.2.0:
     resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
     engines: {node: '>=4'}
@@ -1624,6 +1636,9 @@ packages:
   readdirp@4.1.2:
     resolution: {integrity: sha512-GDhwkLfywWL2s6vEjyhri+eXmfH6j1L7JE27WhqLeYzoh/A3DBaYGEj2H/HFZCn/kMfim73FXxEJTw06WtxQwg==}
     engines: {node: '>= 14.18.0'}
+
+  reconnecting-websocket@4.4.0:
+    resolution: {integrity: sha512-D2E33ceRPga0NvTDhJmphEgJ7FUYF0v4lr1ki0csq06OdlxKfugGzN0dSkxM/NfqCxYELK4KcaTOUOjTV6Dcng==}
 
   regexparam@3.0.0:
     resolution: {integrity: sha512-RSYAtP31mvYLkAHrOlh25pCNQ5hWnT106VukGaaFfuJrZFkGRX5GhUAdPqpSDXxOhA2c4akmRuplv1mRqnBn6Q==}
@@ -2324,6 +2339,8 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.39.0':
     optional: true
 
+  '@simplewebauthn/types@12.0.0': {}
+
   '@sveltejs/acorn-typescript@1.0.5(acorn@8.14.1)':
     dependencies:
       acorn: 8.14.1
@@ -2801,6 +2818,8 @@ snapshots:
 
   esutils@2.0.3: {}
 
+  eventemitter3@5.0.1: {}
+
   exit-hook@2.2.1: {}
 
   exsolve@1.0.4: {}
@@ -3027,6 +3046,12 @@ snapshots:
     dependencies:
       brace-expansion: 2.0.1
 
+  misskey-js@2025.4.0-rc.1:
+    dependencies:
+      '@simplewebauthn/types': 12.0.0
+      eventemitter3: 5.0.1
+      reconnecting-websocket: 4.4.0
+
   mri@1.2.0: {}
 
   mrmime@2.0.1: {}
@@ -3127,6 +3152,8 @@ snapshots:
   queue-microtask@1.2.3: {}
 
   readdirp@4.1.2: {}
+
+  reconnecting-websocket@4.4.0: {}
 
   regexparam@3.0.0: {}
 
