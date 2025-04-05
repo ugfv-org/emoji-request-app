@@ -120,7 +120,7 @@ const app = new Hono()
           "Content-Type": "application/json",
         },
       })
-
+      
       const promiseI = fetch(`${PUBLIC_MISSKEY_SERVER_URL}/api/i`, {
         method: "POST",
         body: JSON.stringify({
@@ -132,7 +132,9 @@ const app = new Hono()
       })
 
       const [note, i] = await Promise.all([promiseNote, promiseI]) as any[]
-      if (i.id !== note.user.id) {
+      const noteJson = await note.json()
+      const iJson = await i.json()
+      if (iJson.id !== noteJson.user.id) {
         return c.text("Unauthorized", 401)
       }
 
