@@ -1,5 +1,5 @@
 
-import { EMOJI_ACCESS_TOKEN } from '$env/dynamic/private';
+import { env } from '$env/dynamic/private';
 import { PUBLIC_MISSKEY_SERVER_URL, PUBLIC_CHANNEL_ID } from '$env/static/public';
 import { Hono } from 'hono';
 import { api, note } from 'misskey-js';
@@ -12,7 +12,7 @@ import { zValidator } from '@hono/zod-validator';
 
 const miApi = new api.APIClient({
   origin: PUBLIC_MISSKEY_SERVER_URL,
-  credential: EMOJI_ACCESS_TOKEN,
+  credential: env.EMOJI_ACCESS_TOKEN,
 })
 
 // const rest = new REST().setToken(DISCORD_TOKEN)
