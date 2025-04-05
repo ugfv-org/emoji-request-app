@@ -54,36 +54,39 @@ export const splitEmojis = (note: Note): Emoji[] => {
     splitText.splice(0, 1);
   }
 
-  let prevFieldTexts: string[] = [];
+  // 前の絵文字のフィールド値を保持する (フィールド番号をキーとする)
+  let prevFieldTexts: Record<string, string> = {};
 
   splitText.forEach((emojiText, emojiIdx) => {
     if (!emojiText.includes(NAMECHAR)) return;
     if (note.files?.[emojiIdx] == null) return;
 
-    const positions = [];
+    // 各フィールドの番号と位置、テキストを抽出
+    const foundFields: { numbering: string; pos: number; text: string }[] = [];
     for (const [numbering] of requestFields) {
-      const prevPosObj = positions.at(-1);
-      const prevPos = prevPosObj == null ? 0 : prevPosObj.pos + prevPosObj.skip;
-      const pos = emojiText.indexOf(numbering, prevPos); 
-      if (pos === -1) break;
-      positions.push({ pos, skip: numbering.length });
+      const pos = emojiText.indexOf(numbering);
+      if (pos !== -1) {
+        foundFields.push({ numbering, pos, text: "" });
+      }
     }
-    positions.push({ pos: emojiText.length, skip: 0});
 
-    const fieldTexts: string[] = [];
-    positions.reduce((start, end) => {
-      fieldTexts.push(emojiText.slice(start.pos + start.skip, end.pos).trim());
-      return end;
-    });
+    // 位置でソート
+    foundFields.sort((a, b) => a.pos - b.pos);
 
-    fieldTexts.map((text, i) => {
-      if (text.match(REPEATCHAR_REGEXP)) fieldTexts[i] = prevFieldTexts[i];
-    });
+    // 各フィールドのテキストを抽出
+    for (let i = 0; i < foundFields.length; i++) {
+      const currentField = foundFields[i];
+      const nextField = foundFields[i + 1];
+      const start = currentField.pos + currentField.numbering.length;
+      const end = nextField ? nextField.pos : emojiText.length;
+      currentField.text = emojiText.slice(start, end).trim();
+    }
 
-    prevFieldTexts = fieldTexts;
+    // 現在の絵文字のフィールド値を一時的に保持する
+    const currentFieldTexts: Record<string, string> = {};
 
     const emoji: Emoji = {
-      name: "",
+      name: "", // デフォルト値を設定
       license: "",
       from: "",
       description: "",
@@ -92,14 +95,35 @@ export const splitEmojis = (note: Note): Emoji[] => {
       category: "",
       isSensitive: "",
       localOnly: "",
-      file: note.files[emojiIdx]
-    }
+      file: note.files[emojiIdx],
+    };
 
-    fieldTexts.forEach((text, idx) => {
-      requestFields[idx][1](text, emoji);
+    // requestFieldsMap を作成して、番号から処理関数を引けるようにする
+    const requestFieldsMap = new Map(requestFields);
+
+    // 抽出したフィールド情報を使って emoji オブジェクトを更新
+    foundFields.forEach(field => {
+      const processFunc = requestFieldsMap.get(field.numbering);
+      let valueToSet = field.text;
+
+      // ★や☆が見つかった場合、前の絵文字の同じフィールドの値を使用
+      if (valueToSet.match(REPEATCHAR_REGEXP)) {
+        valueToSet = prevFieldTexts[field.numbering] || ""; // 前の値がなければ空文字
+      }
+
+      // 現在の絵文字のフィールド値を保存 (次の絵文字の繰り返し処理用)
+      currentFieldTexts[field.numbering] = valueToSet;
+
+      // 対応する処理関数を実行
+      if (processFunc) {
+        processFunc(valueToSet, emoji);
+      }
     });
 
     emojis.push(emoji);
+
+    // 次の絵文字のために、現在のフィールド値を prevFieldTexts として保存
+    prevFieldTexts = currentFieldTexts;
   })
 
   return emojis
