@@ -1,6 +1,6 @@
 import { api } from "misskey-js";
 
-import { accessToken, type Emoji } from "./store";
+import { accessToken, note as noteData, sendEmojis, type Emoji } from "./store";
 import { get } from "svelte/store";
 import type { APIClient } from "misskey-js/api.js";
 import type { AdminEmojiAddRequest, DriveFilesCreateResponse, Note } from "misskey-js/entities.js";
@@ -120,7 +120,20 @@ export const splitEmojis = (note: Note): Emoji[] => {
       }
     });
 
+    const sendEmoji = {
+      name: emoji.name,
+      fileId: emoji.file.id,
+      category: emoji.category,
+      aliases: emoji.tag,
+      license: `@${get(noteData).user.username} ${emoji.license}`,
+      isSensitive: emoji.isSensitive !== '',
+      localOnly: emoji.localOnly !== '',
+      roleIdsThatCanBeUsedThisEmojiAsReaction: []
+    };
+
+    sendEmojis.set([ ...get(sendEmojis), sendEmoji]);
     emojis.push(emoji);
+    
 
     // 次の絵文字のために、現在のフィールド値を prevFieldTexts として保存
     prevFieldTexts = currentFieldTexts;

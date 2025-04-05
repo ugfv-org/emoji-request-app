@@ -3,6 +3,7 @@ import { writable } from "svelte/store";
 import { get } from "svelte/store";
 import { init as apiInit } from "./misskey";
 import type { DriveFile, Note } from "misskey-js/entities.js";
+import type { AdminEmojiAddRequest } from 'misskey-js/entities.js';
 
 export type Emoji = {
   originalText: string
@@ -22,6 +23,7 @@ export const accessToken = writable("");
 export const note = writable<Note>();
 export const defaultFFMpegArgs = writable("-lossless 1");
 export const emojis = writable<Emoji[]>();
+export const sendEmojis = writable<AdminEmojiAddRequest[]>([]);
 
 export const getCookie = () => {
   const cookies = document.cookie;

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { defaultFFMpegArgs, note, serverUrl, type Emoji } from '../lib/store';
+	import { note, serverUrl, type Emoji } from '../lib/store';
 	import { get } from 'svelte/store';
 	import type { AdminEmojiAddRequest } from 'misskey-js/entities.js';
 
@@ -7,16 +7,8 @@
 
 	let taginput = '';
 
-	let sendEmojiData: AdminEmojiAddRequest = {
-		name: emoji.name,
-		fileId: '',
-		category: emoji.category,
-		aliases: emoji.tag,
-		license: `@${get(note).user.username} ${emoji.license}`,
-		isSensitive: emoji.isSensitive !== '',
-		localOnly: emoji.localOnly !== '',
-		roleIdsThatCanBeUsedThisEmojiAsReaction: []
-	};
+	export let sendEmojiData: AdminEmojiAddRequest;
+	
 
 </script>
 

@@ -6,7 +6,7 @@
 		PUBLIC_CHANNEL_ID
 	} from '$env/static/public';
 	import { MiAuth } from '$lib/miauth.svelte';
-	import { accessToken, getCookie, updateCookie, note, emojis } from '$lib/store';
+	import { accessToken, getCookie, updateCookie, note, emojis, sendEmojis } from '$lib/store';
 	import { get } from 'svelte/store';
 	import { getNote, init, splitEmojis } from '$lib/misskey';
 	import { onMount, tick } from 'svelte';
@@ -59,20 +59,13 @@
 	};
 
 	const requestEmoji = async () => {
+		
 		try {
 			await client.api.req.$post({
 				json: {
 					noteId: get(note).id,
 					authorToken: get(accessToken),
-					emojis: get(emojis).map((emoji) => ({
-						name: emoji.name,
-						fileId: emoji.file.id,
-						category: emoji.category,
-						aliases: emoji.tag,
-						license: emoji.license,
-						isSensitive: emoji.isSensitive === 'true',
-						localOnly: emoji.localOnly === 'true',
-					}))
+					emojis: get(sendEmojis)
 				}
 			});
 			requested = true;
@@ -139,7 +132,7 @@
 					{#if selectedTab == null}
 						<div></div>
 					{:else}
-						<EmojiViewer bind:emoji={$emojis[selectedTab]}></EmojiViewer>
+						<EmojiViewer bind:sendEmojiData={$sendEmojis[selectedTab]} bind:emoji={$emojis[selectedTab]}></EmojiViewer>
 					{/if}
 				</div>
 				{#if parsed}

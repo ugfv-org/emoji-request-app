@@ -27,6 +27,8 @@ export const addEmoji = async (request: AdminEmojiAddRequest) => {
   // request.fileId = createFile.id;
   // const ret = await miApi.request("admin/emoji/add", request);
 
+  console.log(request)
+
   const ret = await (await fetch(`${PUBLIC_MISSKEY_SERVER_URL}/api/admin/emoji/add`, {
     method: "POST",
     body: JSON.stringify({
