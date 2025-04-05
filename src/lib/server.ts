@@ -1,5 +1,5 @@
 
-import { EMOJI_ACCESS_TOKEN } from '$env/static/private';
+import { EMOJI_ACCESS_TOKEN } from '$env/dynamic/private';
 import { PUBLIC_MISSKEY_SERVER_URL, PUBLIC_CHANNEL_ID } from '$env/static/public';
 import { Hono } from 'hono';
 import { api, note } from 'misskey-js';
