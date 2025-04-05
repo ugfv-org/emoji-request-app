@@ -2,18 +2,18 @@
 import { env } from '$env/dynamic/private';
 import { PUBLIC_MISSKEY_SERVER_URL, PUBLIC_CHANNEL_ID } from '$env/static/public';
 import { Hono } from 'hono';
-import { api, note } from 'misskey-js';
-import type { DriveFilesCreateResponse, AdminEmojiAddRequest } from 'misskey-js/entities.js';
+// import { api, note } from 'misskey-js';
+import type { AdminEmojiAddRequest, AdminEmojiAddResponse } from 'misskey-js/entities.js';
 
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 
 // import { REST } from 'discord.js';
 
-const miApi = new api.APIClient({
-  origin: PUBLIC_MISSKEY_SERVER_URL,
-  credential: env.EMOJI_ACCESS_TOKEN,
-})
+// const miApi = new api.APIClient({
+//   origin: PUBLIC_MISSKEY_SERVER_URL,
+//   credential: env.EMOJI_ACCESS_TOKEN,
+// })
 
 // const rest = new REST().setToken(DISCORD_TOKEN)
 
@@ -25,7 +25,16 @@ export const addEmoji = async (request: AdminEmojiAddRequest) => {
   //   method: "POST", body: formData, headers: {},
   // })).json() as any as DriveFilesCreateResponse
   // request.fileId = createFile.id;
-  const ret = await miApi.request("admin/emoji/add", request);
+  // const ret = await miApi.request("admin/emoji/add", request);
+
+  const ret = await (await fetch(`${PUBLIC_MISSKEY_SERVER_URL}/api/admin/emoji/add`, {
+    method: "POST",
+    body: JSON.stringify(request),
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${env.EMOJI_ACCESS_TOKEN}`,
+    },
+  })).json() as any as AdminEmojiAddResponse
 
   let noteText = `新しい絵文字:${ret.name}:（\`${ret.name}\`）が追加されました。\n`
   if (ret.category !== "" && ret.category !== null) {
@@ -43,11 +52,21 @@ export const addEmoji = async (request: AdminEmojiAddRequest) => {
     noteText += `ライセンス： ${replacedMention}`;
   }
 
-
-  const note = await miApi.request("notes/create", {
-    text: noteText,
-    channelId: PUBLIC_CHANNEL_ID,
+  await fetch(`${PUBLIC_MISSKEY_SERVER_URL}/api/notes/create`, {
+    method: "POST",
+    body: JSON.stringify({
+      text: noteText,
+      channelId: PUBLIC_CHANNEL_ID,
+    }),
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${env.EMOJI_ACCESS_TOKEN}`,
+    },
   })
+  // const note = await miApi.request("notes/create", {
+  //   text: noteText,
+  //   channelId: PUBLIC_CHANNEL_ID,
+  // })
   console.log(ret)
 }
 
@@ -71,21 +90,35 @@ const app = new Hono()
       const request = c.req.valid('json');
 
       // 申請者のトークンとノートの作者のトークンが一致するか
-      const miCheckApi = new api.APIClient({
-        origin: PUBLIC_MISSKEY_SERVER_URL,
-        credential: request.authorToken,
+      // const miCheckApi = new api.APIClient({
+      //   origin: PUBLIC_MISSKEY_SERVER_URL,
+      //   credential: request.authorToken,
+      // })
+
+      // const promiseNote = miCheckApi.request("notes/show", {
+      //   noteId: request.noteId,
+      //   includeReactions: false,
+      //   includeRenote: false,
+      //   includeUser: true,
+      // })
+
+      // const promiseI = miCheckApi.request("i", {})
+
+      const promiseNote = fetch(`${PUBLIC_MISSKEY_SERVER_URL}/api/notes/show`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${env.EMOJI_ACCESS_TOKEN}`,
+        },
       })
 
-      const promiseNote = miCheckApi.request("notes/show", {
-        noteId: request.noteId,
-        includeReactions: false,
-        includeRenote: false,
-        includeUser: true,
+      const promiseI = fetch(`${PUBLIC_MISSKEY_SERVER_URL}/api/i`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${request.authorToken}`,
+        },
       })
 
-      const promiseI = miCheckApi.request("i", {})
-
-      const [note, i] = await Promise.all([promiseNote, promiseI])
+      const [note, i] = await Promise.all([promiseNote, promiseI]) as any[]
       if (i.id !== note.user.id) {
         return c.text("Unauthorized", 401)
       }
