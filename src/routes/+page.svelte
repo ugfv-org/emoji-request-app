@@ -81,10 +81,16 @@
 			error = true;
 		}
 	};
+
+	const removeAuth = () => {
+		accessToken.set('');
+		updateCookie();
+		authed = false;
+	};
 </script>
 
 <svelte:head>
-  <title>{PUBLIC_MISSKEY_SERVER_NAME} 絵文字申請ページ</title>
+	<title>{PUBLIC_MISSKEY_SERVER_NAME} 絵文字申請ページ</title>
 </svelte:head>
 
 {#if error}
@@ -153,7 +159,7 @@
 					</div>
 					<button class="btn btn-primary" disabled={!agree} onclick={requestEmoji}>申請する</button>
 				{:else}
-					<button class="btn btn-sm btn-ghost">認証解除</button>
+					<button class="btn btn-sm btn-ghost" onclick={removeAuth}>認証解除</button>
 				{/if}
 			</div>
 		</div>
